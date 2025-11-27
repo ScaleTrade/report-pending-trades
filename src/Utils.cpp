@@ -104,4 +104,14 @@ namespace utils {
         oss << std::put_time(&tm, "%Y.%m.%d %H:%M:%S");
         return oss.str();
     }
+
+    std::string GetCmdLabel(const int cmd) {
+        switch (cmd) {
+            case 3: return "buy limit";
+            case 4: return "sell limit";
+            case 5: return "buy limit";
+            case 6: return "sell limit";
+            default: return "unknown";
+        }
+    }
 }

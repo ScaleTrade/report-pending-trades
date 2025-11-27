@@ -15,4 +15,6 @@ namespace utils {
               rapidjson::Document::AllocatorType& allocator);
 
     std::string FormatTimestampToString(const time_t timestamp);
+
+    std::string GetCmdLabel(const int cmd);
 }

@@ -39,7 +39,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
     std::vector<TradeRecord> trades_vector;
 
     try {
-
+        server->GetTransactionsByGroup(group_mask, from, to, &trades_vector);
     } catch (const std::exception& e) {
         std::cerr << "[PendingTradesReportInterface]: " << e.what() << std::endl;
     }
@@ -51,10 +51,103 @@ extern "C" void CreateReport(rapidjson::Value& request,
         return oss.str();
     };
 
+    auto create_table = [&](const std::vector<TradeRecord>& trades) -> Node {
+        std::vector<Node> thead_rows;
+        std::vector<Node> tbody_rows;
+        std::vector<Node> tfoot_rows;
+
+        // Thead
+        thead_rows.push_back(tr({
+            th({div({text("Order")})}),
+            th({div({text("Login")})}),
+            th({div({text("Name")})}),
+            th({div({text("Open Time")})}),
+            th({div({text("Type")})}),
+            th({div({text("Symbol")})}),
+            th({div({text("Volume")})}),
+            th({div({text("Open Price")})}),
+            th({div({text("S / L")})}),
+            th({div({text("T / P")})}),
+            th({div({text("Swap")})}),
+            th({div({text("Profit")})}),
+            th({div({text("Comment")})}),
+        }));
+
+        // Tbody
+        for (const auto& trade : trades_vector) {
+            if (trade.cmd == OP_BUY_LIMIT ||
+                trade.cmd == OP_SELL_LIMIT ||
+                trade.cmd == OP_BUY_STOP ||
+                trade.cmd == OP_SELL_STOP) {
+                AccountRecord account;
+
+                server->GetAccountByLogin(trade.login, &account);
+
+                total_volume += trade.volume;
+
+                tbody_rows.push_back(tr({
+                    td({div({text(std::to_string(trade.order))})}),
+                    td({div({text(std::to_string(trade.login))})}),
+                    td({div({text(account.name)})}),
+                    td({div({text(utils::FormatTimestampToString(trade.open_time))})}),
+                    td({div({text(utils::GetCmdLabel(trade.cmd))})}),
+                    td({div({text(trade.symbol)})}),
+                    td({div({text(format_for_AST(trade.volume))})}),
+                    td({div({text(format_for_AST(trade.open_price))})}),
+                    td({div({text(std::to_string(trade.sl))})}),
+                    td({div({text(std::to_string(trade.tp))})}),
+                    td({div({text(std::to_string(trade.storage))})}),
+                    td({div({text(format_for_AST(trade.profit))})}),
+                    td({div({text(trade.comment)})}),
+                }));
+            }
+        }
+
+        // Tfoot
+        tfoot_rows.push_back(tr({
+            td({div({text("TOTAL:")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})})
+        }));
+
+        tfoot_rows.push_back(tr({
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text(format_for_AST(total_volume))})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+            td({div({text("")})}),
+        }));
+
+        return table({
+            thead(thead_rows),
+            tbody(tbody_rows),
+            tfoot(tfoot_rows),
+        }, props({{"className", "table"}}));
+    };
+
 
     // Total report
     const Node report = div({
         h1({text("Pending Trades Report")}),
+        create_table(trades_vector)
     });
 
     utils::CreateUI(report, response, allocator);
