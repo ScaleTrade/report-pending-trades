@@ -39,7 +39,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
     std::vector<TradeRecord> trades_vector;
 
     try {
-        server->GetTransactionsByGroup(group_mask, from, to, &trades_vector);
+        server->GetPendingTradesByGroup(group_mask, from, to, &trades_vector);
     } catch (const std::exception& e) {
         std::cerr << "[PendingTradesReportInterface]: " << e.what() << std::endl;
     }
@@ -75,32 +75,27 @@ extern "C" void CreateReport(rapidjson::Value& request,
 
         // Tbody
         for (const auto& trade : trades_vector) {
-            if (trade.cmd == OP_BUY_LIMIT ||
-                trade.cmd == OP_SELL_LIMIT ||
-                trade.cmd == OP_BUY_STOP ||
-                trade.cmd == OP_SELL_STOP) {
-                AccountRecord account;
+            AccountRecord account;
 
-                server->GetAccountByLogin(trade.login, &account);
+            server->GetAccountByLogin(trade.login, &account);
 
-                total_volume += trade.volume;
+            total_volume += trade.volume;
 
-                tbody_rows.push_back(tr({
-                    td({div({text(std::to_string(trade.order))})}),
-                    td({div({text(std::to_string(trade.login))})}),
-                    td({div({text(account.name)})}),
-                    td({div({text(utils::FormatTimestampToString(trade.open_time))})}),
-                    td({div({text(utils::GetCmdLabel(trade.cmd))})}),
-                    td({div({text(trade.symbol)})}),
-                    td({div({text(format_for_AST(trade.volume))})}),
-                    td({div({text(format_for_AST(trade.open_price))})}),
-                    td({div({text(std::to_string(trade.sl))})}),
-                    td({div({text(std::to_string(trade.tp))})}),
-                    td({div({text(std::to_string(trade.storage))})}),
-                    td({div({text(format_for_AST(trade.profit))})}),
-                    td({div({text(trade.comment)})}),
-                }));
-            }
+            tbody_rows.push_back(tr({
+                td({div({text(std::to_string(trade.order))})}),
+                td({div({text(std::to_string(trade.login))})}),
+                td({div({text(account.name)})}),
+                td({div({text(utils::FormatTimestampToString(trade.open_time))})}),
+                td({div({text(utils::GetCmdLabel(trade.cmd))})}),
+                td({div({text(trade.symbol)})}),
+                td({div({text(format_for_AST(trade.volume))})}),
+                td({div({text(format_for_AST(trade.open_price))})}),
+                td({div({text(std::to_string(trade.sl))})}),
+                td({div({text(std::to_string(trade.tp))})}),
+                td({div({text(std::to_string(trade.storage))})}),
+                td({div({text(format_for_AST(trade.profit))})}),
+                td({div({text(trade.comment)})}),
+            }));
         }
 
         // Tfoot
