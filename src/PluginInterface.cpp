@@ -99,7 +99,7 @@ extern "C" void CreateReport(rapidjson::Value& request,
 
 
         const std::string currency = get_group_currency(account.group);
-        double multiplier = OP_SELL;
+        double multiplier = 1;
 
         total_volume += trade.volume;
 
