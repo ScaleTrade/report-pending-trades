@@ -98,7 +98,13 @@ extern "C" void CreateReport(rapidjson::Value& request,
 
         total_volume += trade.volume;
         const std::string currency = get_group_currency(account.group);
-        double multiplier = 1;
+
+        double multiplier = OP_SELL;
+        try {
+            server->CalculateConvertRateByCurrency(currency, "USD", trade.cmd, &multiplier);
+        } catch (const std::exception& e) {
+            std::cerr << "[PendingTradesReportInterface]: " << e.what() << std::endl;
+        }
 
         table_builder.AddRow({
             {"order", std::to_string(trade.order)},
