@@ -96,7 +96,7 @@ namespace utils {
         response.AddMember("ui", ui_object, allocator);
     }
 
-    std::string FormatTimestampToString(const time_t timestamp) {
+    std::string FormatTimestampToString(const time_t& timestamp) {
         std::tm tm{};
         localtime_r(&timestamp, &tm);
 
@@ -105,13 +105,17 @@ namespace utils {
         return oss.str();
     }
 
-    std::string GetCmdLabel(const int cmd) {
-        switch (cmd) {
-            case 3: return "buy limit";
-            case 4: return "sell limit";
-            case 5: return "buy limit";
-            case 6: return "sell limit";
-            default: return "unknown";
+    double TruncateDouble(const double& value, const int& digits) {
+        const double factor = std::pow(10.0, digits);
+        return std::trunc(value * factor) / factor;
+    }
+
+    std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector, const std::string& group_name) {
+        for (const auto& group : group_vector) {
+            if (group.group == group_name) {
+                return group.currency;
+            }
         }
+        return "N/A";   // группа не найдена - валюта не определена
     }
 }
