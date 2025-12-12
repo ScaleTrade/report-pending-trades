@@ -79,7 +79,6 @@ namespace utils {
             footer_array.PushBack(space_object, allocator);
         }
 
-
         // Modal
         Value model_object(kObjectType);
         model_object.AddMember("size", "xxxl", allocator);
