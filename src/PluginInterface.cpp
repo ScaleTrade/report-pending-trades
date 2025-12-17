@@ -114,7 +114,8 @@ extern "C" void CreateReport(rapidjson::Value& request,
     // Total row
     JSONArray totals_array;
     totals_array.emplace_back(JSONObject{
-        {"volume", total_volume}
+        {"volume", total_volume},
+        {"currency", "USD"}
     });
 
     table_builder.SetTotalData(totals_array);
