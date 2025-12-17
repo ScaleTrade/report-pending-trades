@@ -80,7 +80,6 @@ extern "C" void CreateReport(rapidjson::Value& request,
             std::cerr << "[OpenTradesReportInterface]: " << e.what() << std::endl;
         }
 
-
         const std::string currency = utils::GetGroupCurrencyByName(groups_vector, account.group);
         double multiplier = 1;
 
