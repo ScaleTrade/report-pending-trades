@@ -3,11 +3,11 @@
 #include <vector>
 #include <sstream>
 #include <string>
-#include "Structures.hpp"
+#include "Structures.h"
 #include <rapidjson/document.h>
 #include "ast/Ast.hpp"
 #include "sbxTableBuilder/SBXTableBuilder.hpp"
-#include "utils/Utils.hpp"
+#include "utils/Utils.h"
 
 using namespace ast;
 

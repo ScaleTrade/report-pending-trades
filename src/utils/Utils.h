@@ -4,7 +4,7 @@
 #include <ctime>
 #include <iomanip>
 #include <sstream>
-#include "Structures.hpp"
+#include "Structures.h"
 #include "ast/Ast.hpp"
 #include <rapidjson/document.h>
 
