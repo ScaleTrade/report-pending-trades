@@ -1,8 +1,8 @@
 #include "Utils.h"
 
 namespace utils {
-    void CreateUI(const ast::Node& node,
-                  rapidjson::Value& response,
+    void CreateUI(const ast::Node&                    node,
+                  rapidjson::Value&                   response,
                   rapidjson::Document::AllocatorType& allocator) {
         // Content
         Value node_object(kObjectType);
@@ -86,7 +86,6 @@ namespace utils {
         model_object.AddMember("footerContent", footer_array, allocator);
         model_object.AddMember("content", content_array, allocator);
 
-
         // UI
         Value ui_object(kObjectType);
         ui_object.AddMember("modal", model_object, allocator);
@@ -95,12 +94,12 @@ namespace utils {
         response.AddMember("ui", ui_object, allocator);
     }
 
-    std::string FormatTimestampToString(const time_t& timestamp) {
+    std::string FormatTimestampToString(const time_t& timestamp, const std::string& format) {
         std::tm tm{};
         localtime_r(&timestamp, &tm);
 
         std::ostringstream oss;
-        oss << std::put_time(&tm, "%Y.%m.%d %H:%M:%S");
+        oss << std::put_time(&tm, format.c_str());
         return oss.str();
     }
 
@@ -109,12 +108,13 @@ namespace utils {
         return std::trunc(value * factor) / factor;
     }
 
-    std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector, const std::string& group_name) {
+    std::string GetGroupCurrencyByName(const std::vector<GroupRecord>& group_vector,
+                                       const std::string&              group_name) {
         for (const auto& group : group_vector) {
             if (group.group == group_name) {
                 return group.currency;
             }
         }
-        return "N/A";   // группа не найдена - валюта не определена
+        return "N/A"; // группа не найдена - валюта не определена
     }
-}
+} // namespace utils
