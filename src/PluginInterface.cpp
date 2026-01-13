@@ -112,7 +112,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
                               utils::FormatTimestampToString(trade.open_time),
                               trade.cmd == 0 ? "buy" : "sell",
                               trade.symbol,
-                              utils::TruncateDouble(trade.volume, 0),
+                              utils::TruncateDouble(trade.volume / 100.0, 2),
                               utils::TruncateDouble(trade.open_price * multiplier, 2),
                               utils::TruncateDouble(trade.sl * multiplier, 2),
                               utils::TruncateDouble(trade.tp * multiplier, 2),
@@ -124,7 +124,8 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
 
     // Total row
     JSONArray totals_array;
-    totals_array.emplace_back(JSONObject{{"volume", total_volume}, {"currency", "USD"}});
+    totals_array.emplace_back(JSONObject{{"volume", utils::TruncateDouble(total_volume / 100.0, 2)},
+                                         {"currency", "USD"}});
 
     table_builder.SetTotalData(totals_array);
 
