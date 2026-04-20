@@ -5,7 +5,7 @@
 extern "C" void AboutReport(rapidjson::Value&                   request,
                             rapidjson::Value&                   response,
                             rapidjson::Document::AllocatorType& allocator,
-                            CServerInterface*                   server) {
+                            ReportServerInterface*              server) {
     response.AddMember("version", 1, allocator);
     response.AddMember("name", Value().SetString("Pending Trades report", allocator), allocator);
     response.AddMember("description",
@@ -15,7 +15,8 @@ extern "C" void AboutReport(rapidjson::Value&                   request,
                                          "p, commission, swap and account information.",
                                          allocator),
                        allocator);
-    response.AddMember("type", REPORT_DAILY_GROUP_TYPE, allocator);
+    response.AddMember("type", static_cast<int>(ReportType::DailyGroup), allocator);
+    response.AddMember("key", Value().SetString("PENDING_TRADES_REPORT", allocator), allocator);
 }
 
 extern "C" void DestroyReport() {}
@@ -23,7 +24,7 @@ extern "C" void DestroyReport() {}
 extern "C" void CreateReport(rapidjson::Value&                   request,
                              rapidjson::Value&                   response,
                              rapidjson::Document::AllocatorType& allocator,
-                             CServerInterface*                   server) {
+                             ReportServerInterface*              server) {
     std::string group_mask;
     int         from;
     int         to;
@@ -37,9 +38,9 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
         to = request["to"].GetInt();
     }
 
-    double                   total_volume;
-    std::vector<TradeRecord> trades_vector;
-    std::vector<GroupRecord> groups_vector;
+    double                         total_volume;
+    std::vector<ReportTradeRecord> trades_vector;
+    std::vector<ReportGroupRecord> groups_vector;
 
     try {
         server->GetPendingTradesByGroup(group_mask, from, to, &trades_vector);
@@ -85,7 +86,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
     table_builder.AddColumn({"currency", "CURRENCY", 14, search_filter});
 
     for (const auto& trade : trades_vector) {
-        AccountRecord account;
+        ReportAccountRecord account;
 
         try {
             server->GetAccountByLogin(trade.login, &account);
@@ -100,7 +101,8 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
 
         if (currency != "USD") {
             try {
-                server->CalculateConvertRateByCurrency(currency, "USD", trade.cmd, &multiplier);
+                server->CalculateConvertRateByCurrency(
+                    currency, "USD", static_cast<int>(trade.cmd), &multiplier);
             } catch (const std::exception& e) {
                 std::cerr << "[PendingTradesReportInterface]: " << e.what() << std::endl;
             }
@@ -110,7 +112,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
                               utils::TruncateDouble(trade.login, 0),
                               account.name,
                               utils::FormatTimestampToString(trade.open_time),
-                              utils::ConvertCmdToString(trade.cmd),
+                              utils::ConvertCmdToString(static_cast<int>(trade.cmd)),
                               trade.symbol,
                               utils::TruncateDouble(trade.volume / 100.0, 2),
                               utils::TruncateDouble(trade.open_price * multiplier, 2),
