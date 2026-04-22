@@ -3,6 +3,8 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <unordered_map>
+
 #include "ReportServerInterface.h"
 #include <rapidjson/document.h>
 #include "ast/Ast.hpp"
