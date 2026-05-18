@@ -4,6 +4,7 @@
 #include <sstream>
 #include <string>
 #include <unordered_map>
+#include <iomanip>
 
 #include "ReportServerInterface.h"
 #include <rapidjson/document.h>
@@ -15,6 +16,8 @@
 using namespace ast;
 
 extern "C" {
+    int GetReportApiVersion();
+
     void AboutReport(rapidjson::Value& request,
                      rapidjson::Value& response,
                      rapidjson::Document::AllocatorType& allocator,
