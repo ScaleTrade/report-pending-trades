@@ -28,12 +28,12 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
                              rapidjson::Document::AllocatorType& allocator,
                              ReportServerInterface*              server) {
     // Validation
-    constexpr ReportType   report_type = ReportType::RangeGroup;
+    constexpr ReportType   report_type = ReportType::DailyGroup;
     const ValidationResult validation_result =
         RequestValidator::ValidateRequest(report_type, request, server);
 
     if (!validation_result.allowed) {
-        std::cerr << "[OpenTradesReportInterface]: " << validation_result.code
+        std::cerr << "[PendingTradesReportInterface]: " << validation_result.code
                   << ", message: " << validation_result.message << std::endl;
 
         const Node report =
@@ -48,7 +48,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
         return;
     }
 
-    std::cout << "[OpenTradesReportInterface]: " << validation_result.code
+    std::cout << "[PendingTradesReportInterface]: " << validation_result.code
               << ", message: " << validation_result.message << std::endl;
 
     // Execution
@@ -113,7 +113,7 @@ extern "C" void CreateReport(rapidjson::Value&                   request,
         try {
             server->GetAccountByLogin(trade.login, &account);
         } catch (const std::exception& e) {
-            std::cerr << "[OpenTradesReportInterface]: " << e.what() << std::endl;
+            std::cerr << "[PendingTradesReportInterface]: " << e.what() << std::endl;
         }
 
         const std::string currency   = utils::GetGroupCurrencyByName(groups_vector, account.group);
