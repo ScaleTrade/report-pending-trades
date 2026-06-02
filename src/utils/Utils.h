@@ -5,6 +5,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <set>
 
 #include "ReportServerInterface.h"
 #include "ast/Ast.hpp"
@@ -26,4 +27,9 @@ namespace utils {
                                        const std::string&                    group_name);
 
     std::string ConvertCmdToString(const int cmd);
+
+    std::string Trim(const std::string& str);
+
+    std::set<std::string> SplitToSet(const std::string& str);
+
 } // namespace utils
